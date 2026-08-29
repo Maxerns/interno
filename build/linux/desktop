@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=My Product
+Comment=A interno-scaffold application
+# The Exec line includes %u to pass the URL to the application
+Exec=/usr/local/bin/interno-scaffold %u
+Terminal=false
+Type=Application
+Icon=interno-scaffold
+Categories=Utility;
+StartupWMClass=interno-scaffold
+
+ 
