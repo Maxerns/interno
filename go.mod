@@ -1,4 +1,4 @@
-module changeme
+module github.com/Maxerns/interno
 
 go 1.25.0
 
