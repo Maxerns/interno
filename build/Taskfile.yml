@@ -381,9 +381,11 @@ tasks:
         # Optionally inject signing identifiers if provided
         if [ -n '{{.TEAM_ID}}' ]; then XCB_ARGS+=(DEVELOPMENT_TEAM={{.TEAM_ID}}); fi
         if [ -n '{{.BUNDLE_ID}}' ]; then XCB_ARGS+=(PRODUCT_BUNDLE_IDENTIFIER={{.BUNDLE_ID}}); fi
-        xcodebuild "${XCB_ARGS[@]}" build | xcpretty || true
-        # If xcpretty isn't installed, run without it
-        if [ "${PIPESTATUS[0]}" -ne 0 ]; then
+        # Use xcpretty when available, but preserve xcodebuild's exit status.
+        if command -v xcpretty >/dev/null 2>&1; then
+          xcodebuild "${XCB_ARGS[@]}" build | xcpretty
+        else
+          echo "xcpretty not found; running xcodebuild without output formatting"
           xcodebuild "${XCB_ARGS[@]}" build
         fi
         # Find built .app
