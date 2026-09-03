@@ -20,26 +20,26 @@ func (s *FileService) OpenFolderDialog() (string, error) {
 }
 
 func (s *FileService) ReadDir(directoryName string) ([]string, error) {
-    entries, err := os.ReadDir(directoryName)
-    if err != nil {
-        return nil, err
-    }
+	entries, err := os.ReadDir(directoryName)
+	if err != nil {
+		return nil, err
+	}
 
-    files := make([]string, 0, len(entries))
-    for _, entry := range entries {
-        files = append(files, entry.Name())
-    }
-    return files, nil
+	files := make([]string, 0, len(entries))
+	for _, entry := range entries {
+		files = append(files, entry.Name())
+	}
+	return files, nil
 }
 
 func (s *FileService) ReadFile(fileName string) (string, error) {
-    data, err := os.ReadFile(fileName)
-    if err != nil {
-        return "", err
-    }
-    return string(data), nil
+	data, err := os.ReadFile(fileName)
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
 }
 
 func (s *FileService) WriteFile(fileName, text string) error {
-    return os.WriteFile(fileName, []byte(text), 0644)
+	return os.WriteFile(fileName, []byte(text), 0644)
 }
