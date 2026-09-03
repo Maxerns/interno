@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import {Events, WML} from "@wailsio/runtime";
-import {GreetService} from "../bindings/github.com/Maxerns/interno";
+import {FileService} from "../bindings/github.com/Maxerns/interno";
 
 // Show the actual Wails version this project was generated against.
 const wailsVersion = "v3.0.0-beta.16";
@@ -57,7 +57,7 @@ function App() {
   const doGreet = () => {
     let n = name || 'anonymous';
     swapTitleName(n);
-    GreetService.Greet(n).then(showToast).catch(console.error);
+    FileService.OpenFolderDialog().then(showToast).catch(console.error);
   };
 
   useEffect(() => {
