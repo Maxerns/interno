@@ -15,13 +15,13 @@ const FileSidebar: React.FC = () => {
   const [childrenMap, setChildrenMap] = useState<Record<string, DirEntry[]>>({});
 
   async function openFolder() {
-    setError(null);
-    const path = await FileService.OpenFolderDialog();
-    if (!path) return; // cancel = "" + nil, just no-op
-    setRootPath(path);
-    setOpenFolders(new Set());
-    setChildrenMap({});
     try {
+      const path = await FileService.OpenFolderDialog();
+      if (!path) return; // cancel = "" + nil, just no-op
+      setError(null);
+      setRootPath(path);
+      setOpenFolders(new Set());
+      setChildrenMap({});
       setEntries((await FileService.ReadDir(path)) ?? []);
     } catch (e) {
       setError(String(e));
