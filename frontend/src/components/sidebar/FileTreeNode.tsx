@@ -17,18 +17,34 @@ interface FileTreeNodeProps {
 }
 
 const FileTreeNode: React.FC<FileTreeNodeProps> = ({ node, onToggle, isExpanded = false }) => {
-  const handleToggleClick = () => {
-    if (node.isFolder) {
-      onToggle(node.id);
-    }
-  };
+  if (node.isFolder) {
+    return (
+      <button
+        type="button"
+        aria-expanded={isExpanded}
+        onClick={() => onToggle(node.id)}
+        style={{
+          display: 'block',
+          width: '100%',
+          background: 'transparent',
+          border: 0,
+          color: 'inherit',
+          font: 'inherit',
+          textAlign: 'left',
+          cursor: 'pointer',
+          padding: '2px 0 2px 8px',
+        }}
+      >
+        <span aria-hidden="true">{isExpanded ? '▾ ' : '▸ '}</span>
+        <span>{node.name}</span>
+      </button>
+    );
+  }
 
   return (
     <div
-      onClick={handleToggleClick}
-      style={{ cursor: node.isFolder ? 'pointer' : 'default', padding: '2px 0 2px 8px' }}
+      style={{ padding: '2px 0 2px 8px' }}
     >
-      <span>{node.isFolder ? (isExpanded ? '▾ ' : '▸ ') : ''}</span>
       <span>{node.name}</span>
     </div>
   );
