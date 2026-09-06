@@ -5,3 +5,7 @@ import * as FileService from "./fileservice.js";
 export {
     FileService
 };
+
+export {
+    DirEntry
+} from "./models.js";

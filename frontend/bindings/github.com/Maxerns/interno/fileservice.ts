@@ -3,14 +3,20 @@
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
-import { Call as $Call, CancellablePromise as $CancellablePromise } from "@wailsio/runtime";
+import { Call as $Call, CancellablePromise as $CancellablePromise, Create as $Create } from "@wailsio/runtime";
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore: Unused imports
+import * as $models from "./models.js";
 
 export function OpenFolderDialog(): $CancellablePromise<string> {
     return $Call.ByID(2492876079);
 }
 
-export function ReadDir(directoryName: string): $CancellablePromise<string[] | null> {
-    return $Call.ByID(3174607518, directoryName);
+export function ReadDir(directoryName: string): $CancellablePromise<$models.DirEntry[]> {
+    return $Call.ByID(3174607518, directoryName).then(($result: any) => {
+        return $$createType1($result);
+    });
 }
 
 export function ReadFile(fileName: string): $CancellablePromise<string> {
@@ -20,3 +26,7 @@ export function ReadFile(fileName: string): $CancellablePromise<string> {
 export function WriteFile(fileName: string, text: string): $CancellablePromise<void> {
     return $Call.ByID(3601323672, fileName, text);
 }
+
+// Private type creation functions
+const $$createType0 = $models.DirEntry.createFrom;
+const $$createType1 = $Create.Array($$createType0);
