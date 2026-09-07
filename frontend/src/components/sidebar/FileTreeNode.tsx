@@ -5,18 +5,22 @@ type FileSystemNode = {
   id: string;
   name: string;
   isFolder: boolean;
-  children?: FileSystemNode[]; 
+  children?: FileSystemNode[];
 };
 
 interface FileTreeNodeProps {
   node: FileSystemNode;
   // Function to handle toggling (expanding/collapsing) a folder
-  onToggle: (id: string) => void; 
+  onToggle: (id: string) => void;
   // State hook passed down from parent if needed for styling
-  isExpanded?: boolean; 
+  isExpanded?: boolean;
 }
 
-const FileTreeNode: React.FC<FileTreeNodeProps> = ({ node, onToggle, isExpanded = false }) => {
+const FileTreeNode: React.FC<FileTreeNodeProps> = ({
+  node,
+  onToggle,
+  isExpanded = false,
+}) => {
   if (node.isFolder) {
     return (
       <button
@@ -42,9 +46,7 @@ const FileTreeNode: React.FC<FileTreeNodeProps> = ({ node, onToggle, isExpanded 
   }
 
   return (
-    <div
-      style={{ padding: '2px 0 2px 8px' }}
-    >
+    <div style={{ padding: '2px 0 2px 8px' }}>
       <span>{node.name}</span>
     </div>
   );

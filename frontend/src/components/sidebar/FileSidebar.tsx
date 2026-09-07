@@ -1,5 +1,8 @@
-import React, { useState, useCallback } from 'react';
-import { FileService, DirEntry } from '../../../bindings/github.com/Maxerns/interno';
+import React, { useState, useCallback, useRef } from 'react';
+import {
+  FileService,
+  DirEntry,
+} from '../../../bindings/github.com/Maxerns/interno';
 import FileTree, { type FileSystemNode } from './FileTree';
 
 // Joins a parent dir and entry name without doubling slashes if the
@@ -12,7 +15,12 @@ const FileSidebar: React.FC = () => {
   const [entries, setEntries] = useState<DirEntry[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [openFolders, setOpenFolders] = useState<Set<string>>(new Set());
-  const [childrenMap, setChildrenMap] = useState<Record<string, DirEntry[]>>({});
+  const [childrenMap, setChildrenMap] = useState<Record<string, DirEntry[]>>(
+    {},
+  );
+  const openFoldersRef = useRef(openFolders);
+  const childrenMapRef = useRef(childrenMap);
+  const loadingFoldersRef = useRef(new Set<string>());
 
   async function openFolder() {
     try {
@@ -20,7 +28,10 @@ const FileSidebar: React.FC = () => {
       if (!path) return; // cancel = "" + nil, just no-op
       setError(null);
       setRootPath(path);
-      setOpenFolders(new Set());
+      const nextOpenFolders = new Set<string>();
+      openFoldersRef.current = nextOpenFolders;
+      setOpenFolders(nextOpenFolders);
+      childrenMapRef.current = {};
       setChildrenMap({});
       setEntries((await FileService.ReadDir(path)) ?? []);
     } catch (e) {
@@ -29,51 +40,76 @@ const FileSidebar: React.FC = () => {
   }
 
   const handleToggle = useCallback((id: string) => {
-    const isOpen = openFolders.has(id);
-    setOpenFolders((prev) => {
-      const next = new Set(prev);
-      if (isOpen) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
-    // First expand: lazily load this folder's children (id is the full path).
-    if (!isOpen && !childrenMap[id]) {
-      FileService.ReadDir(id).then(
-        (kids) => setChildrenMap((m) => (m[id] ? m : { ...m, [id]: kids ?? [] })),
-        (e) => setError(String(e)),
-      );
-    }
-  }, [openFolders, childrenMap]);
+    const isOpen = openFoldersRef.current.has(id);
+    const nextOpenFolders = new Set(openFoldersRef.current);
 
-  const buildNodes = useCallback((ents: DirEntry[], parentPath: string): FileSystemNode[] => {
+    if (isOpen) {
+      nextOpenFolders.delete(id);
+    } else {
+      nextOpenFolders.add(id);
+    }
+
+    openFoldersRef.current = nextOpenFolders;
+    setOpenFolders(nextOpenFolders);
+
+    // First expand: lazily load this folder's children (id is the full path).
+    // Track pending requests separately because childrenMap remains empty until
+    // the first request resolves.
+    if (
+      !isOpen &&
+      !childrenMapRef.current[id] &&
+      !loadingFoldersRef.current.has(id)
+    ) {
+      loadingFoldersRef.current.add(id);
+      FileService.ReadDir(id)
+        .then(
+          (kids) => {
+            const nextChildrenMap = {
+              ...childrenMapRef.current,
+              [id]: kids ?? [],
+            };
+            childrenMapRef.current = nextChildrenMap;
+            setChildrenMap(nextChildrenMap);
+          },
+          (e) => setError(String(e)),
+        )
+        .finally(() => {
+          loadingFoldersRef.current.delete(id);
+        });
+    }
+  }, []);
+
+  function buildNodes(ents: DirEntry[], parentPath: string): FileSystemNode[] {
     return ents.map((entry) => {
       const id = joinPath(parentPath, entry.name);
-      const node: FileSystemNode = { id, name: entry.name, isFolder: entry.isDir };
+      const node: FileSystemNode = {
+        id,
+        name: entry.name,
+        isFolder: entry.isDir,
+      };
       if (entry.isDir && openFolders.has(id) && childrenMap[id]) {
         node.children = buildNodes(childrenMap[id], id);
       }
       return node;
     });
-  }, [openFolders, childrenMap]);
+  }
 
   return (
     <div className="bg-gray-50 border-r border-gray-200 p-4 w-64 h-full overflow-y-auto">
-      <h3 className="text-lg font-semibold mb-3 text-gray-800">Project Navigator</h3>
+      <h3 className="text-lg font-semibold mb-3 text-gray-800">
+        Project Navigator
+      </h3>
       <button onClick={openFolder}>Open Folder</button>
       {error && <p>{error}</p>}
 
       {/* The FileTree component renders the root directory contents */}
-      <div className='pt-1'>
+      <div className="pt-1">
         <FileTree
           nodes={rootPath ? buildNodes(entries, rootPath) : []}
           onToggle={handleToggle}
           openFolders={openFolders}
         />
       </div>
-
     </div>
   );
 };
