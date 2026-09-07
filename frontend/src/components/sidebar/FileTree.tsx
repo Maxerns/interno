@@ -14,7 +14,11 @@ interface FileTreeProps {
   openFolders: Set<string>;
 }
 
-const FileTree: React.FC<FileTreeProps> = ({ nodes, onToggle, openFolders }) => {
+const FileTree: React.FC<FileTreeProps> = ({
+  nodes,
+  onToggle,
+  openFolders,
+}) => {
   return (
     <div>
       {nodes.map((node) => {
@@ -31,7 +35,11 @@ const FileTree: React.FC<FileTreeProps> = ({ nodes, onToggle, openFolders }) => 
             {/* If expanded, recursively render its children */}
             {isExpanded && node.children && (
               <div style={{ marginLeft: 12 }}>
-                <FileTree nodes={node.children} onToggle={onToggle} openFolders={openFolders} />
+                <FileTree
+                  nodes={node.children}
+                  onToggle={onToggle}
+                  openFolders={openFolders}
+                />
               </div>
             )}
           </React.Fragment>
