@@ -12,6 +12,8 @@ interface FileTreeNodeProps {
   node: FileSystemNode;
   // Function to handle toggling (expanding/collapsing) a folder
   onToggle: (id: string) => void;
+  // Function to handle selecting a file/folder
+  onSelect: (id: string) => void;
   // State hook passed down from parent if needed for styling
   isExpanded?: boolean;
 }
@@ -19,6 +21,7 @@ interface FileTreeNodeProps {
 const FileTreeNode: React.FC<FileTreeNodeProps> = ({
   node,
   onToggle,
+  onSelect,
   isExpanded = false,
 }) => {
   if (node.isFolder) {
@@ -26,7 +29,7 @@ const FileTreeNode: React.FC<FileTreeNodeProps> = ({
       <button
         type="button"
         aria-expanded={isExpanded}
-        onClick={() => onToggle(node.id)}
+        onClick={() => (node.isFolder ? onToggle(node.id) : onSelect(node.id))}     
         style={{
           display: 'block',
           width: '100%',
@@ -46,7 +49,7 @@ const FileTreeNode: React.FC<FileTreeNodeProps> = ({
   }
 
   return (
-    <div style={{ padding: '2px 0 2px 8px' }}>
+    <div onClick={() => onSelect(node.id)} style={{ padding: '2px 0 2px 8px', cursor: 'pointer' }}>
       <span>{node.name}</span>
     </div>
   );

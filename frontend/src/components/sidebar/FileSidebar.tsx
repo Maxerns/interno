@@ -38,6 +38,10 @@ const FileSidebar: React.FC = () => {
       setError(String(e));
     }
   }
+  const handleSelect = useCallback((id: string) => {
+    // Implement your file/folder selection logic here
+    console.log(id);
+  }, []);
 
   const handleToggle = useCallback((id: string) => {
     const isOpen = openFoldersRef.current.has(id);
@@ -107,6 +111,7 @@ const FileSidebar: React.FC = () => {
         <FileTree
           nodes={rootPath ? buildNodes(entries, rootPath) : []}
           onToggle={handleToggle}
+          onSelect={handleSelect}
           openFolders={openFolders}
         />
       </div>

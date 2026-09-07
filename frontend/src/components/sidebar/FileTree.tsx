@@ -11,12 +11,14 @@ export type FileSystemNode = {
 interface FileTreeProps {
   nodes: FileSystemNode[];
   onToggle: (id: string) => void;
+  onSelect: (id: string) => void;
   openFolders: Set<string>;
 }
 
 const FileTree: React.FC<FileTreeProps> = ({
   nodes,
   onToggle,
+  onSelect,
   openFolders,
 }) => {
   return (
@@ -29,6 +31,7 @@ const FileTree: React.FC<FileTreeProps> = ({
             <FileTreeNode
               node={node}
               onToggle={onToggle}
+              onSelect={onSelect}
               isExpanded={isExpanded}
             />
 
@@ -38,6 +41,7 @@ const FileTree: React.FC<FileTreeProps> = ({
                 <FileTree
                   nodes={node.children}
                   onToggle={onToggle}
+                  onSelect={onSelect}
                   openFolders={openFolders}
                 />
               </div>
