@@ -10,7 +10,11 @@ import FileTree, { type FileSystemNode } from './FileTree';
 const joinPath = (parent: string, name: string) =>
   `${parent.replace(/\/+$/, '')}/${name}`;
 
-const FileSidebar: React.FC = () => {
+type FileSidebarProps = {
+  onOpenFile: (path: string) => void;
+};
+
+const FileSidebar: React.FC<FileSidebarProps> = ({ onOpenFile }) => {
   const [rootPath, setRootPath] = useState<string | null>(null);
   const [entries, setEntries] = useState<DirEntry[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -38,10 +42,12 @@ const FileSidebar: React.FC = () => {
       setError(String(e));
     }
   }
-  const handleSelect = useCallback((id: string) => {
-    // Implement your file/folder selection logic here
-    console.log(id);
-  }, []);
+  const handleSelect = useCallback(
+    (id: string) => {
+      onOpenFile(id);
+    },
+    [onOpenFile],
+  );
 
   const handleToggle = useCallback((id: string) => {
     const isOpen = openFoldersRef.current.has(id);
