@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import FileSidebar from './components/sidebar/FileSidebar';
+import EditorSurface from './components/editor/EditorSurface';
 
 function App() {
   const [_openPaths, setOpenPaths] = useState<string[]>([]);
@@ -15,7 +16,14 @@ function App() {
 
       <main style={{ flex: 1, padding: '2rem' }}>
         <h1>Interno</h1>
-        {activePath ?? 'Select a file'}
+        {activePath ? (
+          <>
+            <p>{activePath}</p>
+            <EditorSurface path={activePath} />
+          </>
+        ) : (
+          'Select a file'
+        )}
       </main>
     </div>
   );
